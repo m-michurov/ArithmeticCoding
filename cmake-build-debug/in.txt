@@ -1,1 +1,24 @@
-The first column contains cumulative probabilities following top to bottom in the same order as they follow in the message. They are multiplied by probabilities for all previous symbols in a message. The index starts from 1. To obtain result we have to compute products of cofactors in every row and then find the sum of them. I call this visual tool ARCOD pyramid.
+some
+    day
+        i'll
+            be
+                gone
+    to
+        somewhere
+            we
+                all
+                    belong
+        and
+            god
+                has
+                    never
+                        played
+                            his
+                                role
+            because
+                i'm
+                    the one
+                        who
+                            saves
+                                my
+                                    soul

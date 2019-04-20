@@ -2,38 +2,25 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define NUM_OF_DIFFERENT_BYTES  256 // 2^8 do not change
-#define BLOCK_SIZE              9
-#define MAX_FILE_SIZE           4294966500
 
-
-typedef struct {
-    unsigned char data;
-    double high;
-    double low;
-    double frequency;
-} CharData;
+#include "binio.h"
 
 
 int count_freqs(
         FILE * in,
-        CharData ** data_array,
-        unsigned int * len)
+        unsigned int * frequencies)
 {
     unsigned char input_buff[BLOCK_SIZE];
 
-    unsigned int freqs[NUM_OF_DIFFERENT_BYTES] = { 0 };
     unsigned int read = 0;
     unsigned int pos = 0;
 
     unsigned long long total = 0;
 
-    //double prev_low = 0.0;
-    double prev_high = 0.0;
 
     while ((read = fread(input_buff, 1, BLOCK_SIZE, in))) {
         while (pos < read)
-            freqs[(int) input_buff[pos++]]++;
+            frequencies[(int) input_buff[pos++]]++;
 
         pos = 0;
         total += read;
@@ -42,80 +29,21 @@ int count_freqs(
     if (total > MAX_FILE_SIZE)
         return -1;
 
-    *len = (unsigned int) total;
-
-    for (int k = 0; k < NUM_OF_DIFFERENT_BYTES; k++) {
-        if (freqs[k] != 0) {
-            data_array[k] = calloc(1, sizeof(CharData));
-            // test for null
-            data_array[k]->frequency = (double) freqs[k] / total;
-            data_array[k]->low = prev_high;
-            data_array[k]->high = data_array[k]->low + data_array[k]->frequency;
-
-            prev_high = data_array[k]->high;
-        }
-    }
-
     return 0;
 }
 
 
-void print_binary(
-        double result)
+void BitsPlusFollow(
+        IO_BUFF * out,
+        int bit,
+        unsigned int * bits_to_follow)
 {
-    unsigned char null_count = 0;
-    unsigned char bit_count = 0;
+    BitWrite(out, bit);
 
-    unsigned long long * p = (unsigned long long *)&result;
-
-    for ( ; (((*p) >> (null_count)) & 0x01) != 1 && null_count < 62; null_count++);
-
-    bit_count = (unsigned char)62 - null_count;
-
-    printf("%.50lf - ", result);
-
-    for (int k = 7; k >= 0; k--) {
-        printf("%u", (bit_count >> k) & 0x01);
+    for ( ; (*bits_to_follow) > 0; (*bits_to_follow) -= 1)
+    {
+        BitWrite(out, 1 - bit);
     }
-
-    printf(" - ");
-
-    for (int k = 61; k >= null_count; k--) {
-        printf("%llu", ((*p) >> k) & 0x01);
-    }
-
-    printf("\n");
-}
-
-
-int find_byte(
-        double num,
-        CharData ** data)
-{
-    for (int k = 0; k < NUM_OF_DIFFERENT_BYTES; k++)
-        if (data[k] && num >= data[k]->low && num < data[k]->high)
-            return k;
-
-    return -1;
-}
-
-
-int decode_double(
-        double num,
-        CharData ** data)
-{
-    unsigned char current_symbol = 0;
-    double current_range;
-
-    for (int k = 0; k < BLOCK_SIZE; k++) {
-        current_symbol = (unsigned char) find_byte(num, data);
-        printf("%c", current_symbol);
-        current_range = data[current_symbol]->high - data[current_symbol]->low;
-        num -= data[current_symbol]->low;
-        num /= current_range;
-    }
-
-    return 0;
 }
 
 
@@ -123,28 +51,29 @@ int EncodeFile(
         char * in_file,
         char * out_file)
 {
-    FILE * fin = fopen(in_file, "rb");
-    FILE * fout = fopen(out_file, "wb");
+    unsigned char input_buff[BLOCK_SIZE];
+    unsigned char file_size[4] = { 0 };
+
+    unsigned int frequencies[NUM_OF_DIFFERENT_BYTES] = { 0 };
+    unsigned int input_file_len = 0;
+
+    unsigned int * b = NULL;
+    unsigned int index[NUM_OF_DIFFERENT_BYTES] = { 0 };
+    unsigned int unique_bytes_count = 0;
+
+    size_t buff_len = 0;
+    size_t byte_pos = 0;
+
+    FILE * fin;
+    FILE * fout;
+
+    fin = fopen(in_file, "rb");
+    fout = fopen(out_file, "wb");
 
     if (fin == NULL || fout == NULL)
         return -2;
 
-    unsigned char input_buff[BLOCK_SIZE];
-    unsigned char file_size[4] = { 0 };
-
-    size_t buff_len = 0;
-    size_t buff_pos = 0;
-
-    unsigned int input_file_len = 0;
-
-    CharData * data[256] = { NULL };
-
-    double low;
-    double high;
-
-    double code_range;
-
-    count_freqs(fin, data, &input_file_len);
+    count_freqs(fin, frequencies);
     // check the result
 
     fseek(fin, 0, 0);
@@ -156,25 +85,197 @@ int EncodeFile(
     file_size[2] = (unsigned char) ((input_file_len >> 8) & 0xFF);
     file_size[3] = (unsigned char) ((input_file_len) & 0xFF);
 
-    for (int k = 0; k < (input_file_len + BLOCK_SIZE - 1) / BLOCK_SIZE; k++)
+
+    fwrite(file_size, 1, 4, fout);
+
+
+    for (int k = 0; k < NUM_OF_DIFFERENT_BYTES; k++)
     {
-        buff_len = (size_t) fread(input_buff, 1, BLOCK_SIZE, fin);
+        if (frequencies[k] > 0)
+        {
+            unique_bytes_count++;
+            input_file_len += frequencies[k];
+        }
+    }
 
-        low = 0.0;
-        high = 1.0;
+    b = (unsigned int *) calloc((size_t) unique_bytes_count + 1, sizeof(unsigned int));
 
-        for (buff_pos = 0; buff_pos < buff_len; buff_pos++) {
-            code_range = high - low;
-            high = low + code_range * data[input_buff[buff_pos]]->high;
-            low = low + code_range * data[input_buff[buff_pos]]->low;
+    if (b == NULL)
+    {
+        return -1;
+    }
+
+    unique_bytes_count = 0;
+
+    for (int k = 0; k < NUM_OF_DIFFERENT_BYTES; k++)
+    {
+        if (frequencies[k] > 0)
+        {
+            unique_bytes_count++;
+
+            b[unique_bytes_count] = b[unique_bytes_count - 1] + frequencies[k];
+            printf("index %d, symbol = %c, frequency = %d, b[%d] = %d\n", unique_bytes_count, k, frequencies[k], unique_bytes_count, b[unique_bytes_count]);
+            index[k] = unique_bytes_count;
+        }
+    }
+
+
+    // i'm so sorry but i'll move declarations i promise
+
+    unsigned int high = 0x10000;
+    unsigned int low = 0x0;
+    unsigned int prev_high = 0x10000;
+    unsigned int prev_low = 0x0;
+    unsigned int div = b[unique_bytes_count];
+    unsigned int first_quarter = (high + 1) / 4;
+    unsigned int half = first_quarter * 2;
+    unsigned int third_quarter = first_quarter * 3;
+    unsigned int bits_to_follow = 0;
+
+    unsigned char current_symbol = '\0';
+
+    IO_BUFF * out = InitBinaryIO(fout, WRITE);
+
+
+    while ((buff_len = fread(input_buff, 1, BLOCK_SIZE, fin)) > 0)
+    {
+        for (int k = 0; k < buff_len; k++)
+        {
+            current_symbol = input_buff[k];
+
+            low = prev_low + b[index[current_symbol] - 1] * (prev_high - prev_low + 1) / div;
+            high = prev_low + b[index[current_symbol]] * (prev_high - prev_low + 1) / div - 1;
+
+            while (true)
+            {
+                if (high < half)
+                {
+                    BitsPlusFollow(out, 0, &bits_to_follow);
+                }
+                else if (low >= half)
+                {
+                    BitsPlusFollow(out, 1, &bits_to_follow);
+
+                    low -= half;
+                    high -= half;
+                }
+                else if ((low >= first_quarter) && (high < third_quarter))
+                {
+                    bits_to_follow++;
+
+                    low -= first_quarter;
+                    high -= first_quarter;
+                }
+                else
+                {
+                    break;
+                }
+
+                low += low;
+                high += high + 1;
+            }
+
+            prev_high = high;
+            prev_low = low;
+        }
+    }
+
+    bits_to_follow++;
+    if (low < first_quarter)
+    {
+        BitsPlusFollow(out, 0, &bits_to_follow);
+    }
+    else
+    {
+        BitsPlusFollow(out, 1, &bits_to_follow);
+    }
+
+
+    EndWrite(out);
+
+    fclose(fin);
+    fclose(fout);
+
+    free(out);
+
+    high = 0x10000;
+    low = 0x0;
+    prev_high = 0x10000;
+    prev_low = 0x0;
+    div = b[unique_bytes_count];
+    first_quarter = (high + 1) / 4;
+    half = first_quarter * 2;
+    third_quarter = first_quarter * 3;
+    bits_to_follow = 0;
+
+    unsigned int value = 0u;
+    unsigned int frequency = 0u;
+
+    fin = fopen("out.txt", "rb");
+    fout = fopen("new.txt", "wb");
+
+    fread(file_size, 1, 4, fin);
+
+    IO_BUFF * in = InitBinaryIO(fin, READ);
+
+    printf("\n");
+
+    value += ByteRead(in) << 8;
+    value += ByteRead(in);
+
+    for (int i = 0; i < input_file_len; i++)
+    {
+        frequency = ((value - prev_low + 1) * div - 1) / (prev_high - prev_low + 1);
+
+        for (current_symbol = 0; b[index[current_symbol]] <= frequency; current_symbol++);
+
+        low = prev_low + b[index[current_symbol] - 1] * (prev_high - prev_low + 1) / div;
+        high = prev_low + b[index[current_symbol]] * (prev_high - prev_low + 1) / div - 1;
+
+        while (true)
+        {
+            if (high < half)
+            {
+                ;
+            }
+            else if (low >= half)
+            {
+                low -= half;
+                high -= half;
+
+                value -= half;
+            }
+            else if ((low >= first_quarter) && (high < third_quarter))
+            {
+                low -= first_quarter;
+                high -= first_quarter;
+                value -= first_quarter;
+            }
+            else
+            {
+                break;
+            }
+
+            low += low;
+            high += high + 1;
+
+            value += value + BitRead(in);
         }
 
-        //print_binary(low);
-        decode_double(low, data);
+        prev_high = high;
+        prev_low = low;
+
+        printf("%c", current_symbol);
+
     }
 
     fclose(fin);
     fclose(fout);
+
+    free(in);
+
+
+    // free the shit out of that memory
 
     return 0;
 }

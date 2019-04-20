@@ -122,6 +122,33 @@ ArithmeticCoding/fast:
 	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/build
 .PHONY : ArithmeticCoding/fast
 
+binio.obj: binio.c.obj
+
+.PHONY : binio.obj
+
+# target to build an object file
+binio.c.obj:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/binio.c.obj
+.PHONY : binio.c.obj
+
+binio.i: binio.c.i
+
+.PHONY : binio.i
+
+# target to preprocess a source file
+binio.c.i:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/binio.c.i
+.PHONY : binio.c.i
+
+binio.s: binio.c.s
+
+.PHONY : binio.s
+
+# target to generate assembly for a file
+binio.c.s:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/binio.c.s
+.PHONY : binio.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -158,6 +185,9 @@ help:
 	@echo ... ArithmeticCoding
 	@echo ... edit_cache
 	@echo ... rebuild_cache
+	@echo ... binio.obj
+	@echo ... binio.i
+	@echo ... binio.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s

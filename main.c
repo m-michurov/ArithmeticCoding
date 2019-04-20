@@ -6,6 +6,9 @@
 #include "binio.h"
 
 
+#define DEBUG_DATA_OUTPUT
+
+
 int count_freqs(
         FILE * in,
         unsigned int * frequencies)
@@ -114,7 +117,9 @@ int EncodeFile(
             unique_bytes_count++;
 
             b[unique_bytes_count] = b[unique_bytes_count - 1] + frequencies[k];
+#ifdef DEBUD_DATA_OUTPUT
             printf("index %d, symbol = %c, frequency = %d, b[%d] = %d\n", unique_bytes_count, k, frequencies[k], unique_bytes_count, b[unique_bytes_count]);
+#endif
             index[k] = unique_bytes_count;
         }
     }
@@ -136,6 +141,8 @@ int EncodeFile(
 
     IO_BUFF * out = InitBinaryIO(fout, WRITE);
 
+
+    // Start encoding
 
     while ((buff_len = fread(input_buff, 1, BLOCK_SIZE, fin)) > 0)
     {
@@ -190,6 +197,8 @@ int EncodeFile(
         BitsPlusFollow(out, 1, &bits_to_follow);
     }
 
+    // End encoding
+
 
     EndWrite(out);
 
@@ -217,8 +226,10 @@ int EncodeFile(
     fread(file_size, 1, 4, fin);
 
     IO_BUFF * in = InitBinaryIO(fin, READ);
-
+#ifdef DEBUD_DATA_OUTPUT
     printf("\n");
+#endif
+    // Start decoding with same frequency table (dunno how to write it into file yet)
 
     value += ByteRead(in) << 8;
     value += ByteRead(in);
@@ -265,9 +276,16 @@ int EncodeFile(
         prev_high = high;
         prev_low = low;
 
+#ifdef DEBUG_DATA_OUTPUT
         printf("%c", current_symbol);
+#endif
+
+        fputc(current_symbol, fout);
 
     }
+
+
+    // End decoding
 
     fclose(fin);
     fclose(fout);

@@ -13,9 +13,7 @@
 //#define DEBUG_BIT_OUTPUT
 
 
-#define NUM_OF_DIFFERENT_BYTES  256 // 2^8 do not change
-#define BLOCK_SIZE              65536
-#define MAX_FILE_SIZE           4294966500
+#define BLOCK_SIZE      1024
 
 
 #define WRITE   0

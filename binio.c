@@ -83,9 +83,16 @@ IO_BUFF * InitBinaryIO(
     IO_BUFF * new_buff = (IO_BUFF *) malloc(sizeof(IO_BUFF));
 
     if (new_buff == NULL)
+    {
         return NULL;
+    }
 
-    memset(new_buff->string, 0, BLOCK_SIZE);
+    new_buff->string = (unsigned char *) calloc(1, BLOCK_SIZE);
+
+    if (new_buff->string == NULL)
+    {
+        return NULL;
+    }
 
     new_buff->file = file;
     new_buff->byte_pos = mode;

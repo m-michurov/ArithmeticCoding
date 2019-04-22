@@ -13,7 +13,7 @@
 //#define DEBUG_BIT_OUTPUT
 
 
-#define BLOCK_SIZE      1024
+#define BLOCK_SIZE      (size_t)(1024 * 1024)
 
 
 #define WRITE   0
@@ -26,7 +26,7 @@ typedef struct st_BitBuff
 
     FILE * file;
 
-    unsigned char string[BLOCK_SIZE];
+    unsigned char * string;
 } IO_BUFF;
 
 

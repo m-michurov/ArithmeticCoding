@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 #include "binio.h"
@@ -8,10 +9,12 @@
 
 //#define DEBUG_DATA_OUTPUT
 
+#define REG_BITS        16
+
 #define MAX_FILE_SIZE   4294966500
 #define NO_OF_BYTES     256 // 2^8 do not change
 
-#define TOP_VALUE       65535
+#define TOP_VALUE       ((1u << REG_BITS) - 1)
 #define FIRST_QUARTER   (TOP_VALUE / 4 + 1)
 #define HALF            (FIRST_QUARTER * 2)
 #define THIRD_QUARTER   (FIRST_QUARTER * 3)
@@ -35,10 +38,9 @@ static inline void scale_frequencies(
 long long int count_freqs(
         FILE * in,
         unsigned int * frequency,
-        unsigned int * cumulative_frequency)
+        unsigned int * cumulative_frequency,
+        unsigned char * input_buff)
 {
-    unsigned char input_buff[BLOCK_SIZE];
-
     unsigned int read = 0;
     unsigned int pos = 0;
 
@@ -66,7 +68,13 @@ long long int count_freqs(
 
         pos = 0;
         total += read;
+
+        printf("\rReading file: %llu %s   ",
+                total > 1023 ? (total > 1048575 ? total / 1048576 : total / 1024) : total,
+                 total > 1023 ? (total > 1048575 ? "MiB" : "KiB") : "B");
     }
+
+    printf("\r\nDone reading!\n");
 
     if (total > MAX_FILE_SIZE)
         return -1;
@@ -85,7 +93,7 @@ static inline void reset_frequencies(
         cumulative_frequency[k] = k + 1;
     }
 
-    //frequency[0] = 0u;
+    frequency[0] = 0u;
 }
 
 
@@ -94,7 +102,7 @@ static inline void update_frequencies(
         unsigned int * frequency,
         unsigned int * cumulative_frequency)
 {
-    if (cumulative_frequency[NO_OF_BYTES - 1] == MAX_FREQUENCY)
+    if (cumulative_frequency[NO_OF_BYTES - 1] >= MAX_FREQUENCY)
     {
         scale_frequencies(frequency, cumulative_frequency);
     }
@@ -126,11 +134,20 @@ int EncodeFile(
         char * in_file,
         char * out_file)
 {
-    unsigned char input_buff[BLOCK_SIZE];
+    unsigned char * buff = (unsigned char *) malloc(BLOCK_SIZE);
+
+    if (buff == NULL)
+    {
+        printf("Unable to allocate %llu bytes", (unsigned long long int) BLOCK_SIZE);
+        return -1;
+    }
+    //unsigned char output_buff[BLOCK_SIZE];
     unsigned char file_size[4] = { 0 };
 
+    unsigned int out_pos = 0u;
     unsigned int frequencies[NO_OF_BYTES] = { 0 };
-    unsigned int input_file_len = 0;
+    unsigned int input_file_len = 0u;
+    unsigned int encoded_len = 0u;
 
     unsigned int * c_f = calloc(NO_OF_BYTES + 1, sizeof(unsigned int));
     unsigned int * cumulative_frequencies = c_f + 1;
@@ -146,7 +163,9 @@ int EncodeFile(
     if (fin == NULL || fout == NULL)
         return -2;
 
-    input_file_len = (unsigned int) count_freqs(fin, frequencies, cumulative_frequencies);
+    clock_t count = clock();
+
+    input_file_len = (unsigned int) count_freqs(fin, frequencies, cumulative_frequencies, buff);
     // check the result
 
     //reset_frequencies(frequencies, cumulative_frequencies);
@@ -196,11 +215,13 @@ int EncodeFile(
 
     // Start encoding
 
-    while ((buff_len = fread(input_buff, 1, BLOCK_SIZE, fin)) > 0)
+    clock_t start = clock();
+
+    while ((buff_len = fread(buff, 1, BLOCK_SIZE, fin)) > 0)
     {
         for (int k = 0; k < buff_len; k++)
         {
-            current_symbol = input_buff[k];
+            current_symbol = buff[k];
 
             low = prev_low + cumulative_frequencies[current_symbol - 1] * (prev_high - prev_low + 1) / div;
             high = prev_low + cumulative_frequencies[current_symbol] * (prev_high - prev_low + 1) / div - 1;
@@ -244,6 +265,9 @@ int EncodeFile(
 #endif
             //update_frequencies(current_symbol, frequencies, cumulative_frequencies);
         }
+
+        encoded_len += buff_len;
+        printf("\rEncoding: %.2lf %%", (double) encoded_len / input_file_len * 100);
     }
 
     bits_to_follow++;
@@ -258,21 +282,27 @@ int EncodeFile(
 
     // End encoding
 
+    printf("\r\nDone encoding!\n");
+
+    clock_t mid = clock();
+
 
     EndWrite(out);
 
     fclose(fin);
     fclose(fout);
 
+    free(out->string);
     free(out);
 
     prev_high = TOP_VALUE;
-    prev_low = 0;
+    prev_low = 0u;
     div = cumulative_frequencies[NO_OF_BYTES - 1];
-    bits_to_follow = 0;
+    bits_to_follow = 0u;
 
     unsigned int value = 0u;
     unsigned int frequency;
+    unsigned int decoded = 0u;
 
     fin = fopen(out_file, "rb");
     fout = fopen("new.bin", "wb");
@@ -294,7 +324,7 @@ int EncodeFile(
 #endif
     // Start decoding with same frequency table (dunno how to write it into file yet)
 
-    for (int k = 0; k < 16; k++)
+    for (int k = 0; k < REG_BITS; k++)
     {
         value += value + BitRead(in);
     }
@@ -345,22 +375,43 @@ int EncodeFile(
         printf("%c", current_symbol);
 #endif
 
-        fputc(current_symbol, fout);
+        buff[out_pos++] = current_symbol;
+
+        if (out_pos == BLOCK_SIZE)
+        {
+            fwrite(buff, 1, BLOCK_SIZE, fout);
+            out_pos = 0;
+            decoded += BLOCK_SIZE;
+            printf("\rDecoding: %.2lf %%", (double) decoded / input_file_len * 100);
+        }
 #ifdef AD
         for (int i = index[current_symbol]; i < unique_bytes_count + 1; i++)
         {
             cumulative_frequencies[i]++;
         }
 #endif
-        //update_frequencies(current_symbol, frequencies, cumulative_frequencies);
+       //update_frequencies(current_symbol, frequencies, cumulative_frequencies);
+
+
     }
+
+    fwrite(buff, 1, out_pos, fout);
+    printf("\rDecoding: %.2lf %%", (double) 100);
 
 
     // End decoding
 
+    printf("\r\nDone decoding!\n");
+
+    clock_t end = clock();
+
+    printf("Counting frequencies took %.2lf s, encoding took %.2lf s, decoding took %.2lf s\n",
+           (double) (start - count) / 1000,  (double) (mid - start) / 1000, (double) (end - mid) / 1000);
+
     fclose(fin);
     fclose(fout);
 
+    free(in->string);
     free(in);
 
 

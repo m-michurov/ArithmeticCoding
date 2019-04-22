@@ -80,8 +80,8 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CMakeLists.txt" value="6" />
-          <entry key="ObjectiveC" value="7628" />
-          <entry key="PLAIN_TEXT" value="479" />
+          <entry key="ObjectiveC" value="7636" />
+          <entry key="PLAIN_TEXT" value="500" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -134,11 +134,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+            <state relative-caret-position="75">
+              <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -164,10 +164,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cmake-build-debug/out.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-99136" />
+            <state relative-caret-position="-117" />
           </provider>
         </entry>
       </file>
@@ -289,7 +289,7 @@
       <workItem from="1555815984453" duration="1128000" />
       <workItem from="1555817404903" duration="5320000" />
       <workItem from="1555857897539" duration="6391000" />
-      <workItem from="1555936916055" duration="9352000" />
+      <workItem from="1555936916055" duration="9621000" />
     </task>
     <task id="LOCAL-00001" summary="oh god it works">
       <created>1555769239208</created>
@@ -316,7 +316,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51841000" />
+    <option name="totallyTimeSpent" value="52110000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
@@ -327,13 +327,13 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32761312" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.24461539" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.24461539" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.17076923" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.37076923" />
+      <window_info active="true" anchor="bottom" id="Messages" order="8" visible="true" weight="0.37076923" />
       <window_info anchor="bottom" id="Terminal" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" />
@@ -376,7 +376,8 @@
     <MESSAGE value="oh god it works" />
     <MESSAGE value="Hey it works now holy ***" />
     <MESSAGE value="IT REALLY WORKS&#10;With big (&gt; 1MiB) files" />
-    <option name="LAST_COMMIT_MESSAGE" value="IT REALLY WORKS&#10;With big (&gt; 1MiB) files" />
+    <MESSAGE value="it works&#10;but slowly" />
+    <option name="LAST_COMMIT_MESSAGE" value="it works&#10;but slowly" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/cmake-build-debug/new.txt" />
@@ -384,13 +385,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="5" column="54" selection-start-line="5" selection-start-column="54" selection-end-line="5" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AR.C">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="42" column="52" selection-start-line="42" selection-start-column="52" selection-end-line="42" selection-end-column="52" />
         </state>
       </provider>
     </entry>
@@ -418,9 +412,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/out.txt">
+    <entry file="file://$PROJECT_DIR$/AR.C">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-99136" />
+        <state relative-caret-position="270">
+          <caret line="42" column="52" selection-start-line="42" selection-start-column="52" selection-end-line="42" selection-end-column="52" />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cmake-build-debug/in.txt">
@@ -430,18 +426,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cmake-build-debug/out.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-117" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmake-build-debug/new.bin">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+        <state relative-caret-position="75">
+          <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/new.bin">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>

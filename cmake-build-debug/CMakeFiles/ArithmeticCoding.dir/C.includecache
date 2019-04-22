@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-E:/CLionProjects/ArithmeticCoding/binio.c
-binio.h
-E:/CLionProjects/ArithmeticCoding/binio.h
-
 E:/CLionProjects/ArithmeticCoding/binio.h
 stdio.h
 -
@@ -28,6 +24,8 @@ stdio.h
 string.h
 -
 stdlib.h
+-
+time.h
 -
 binio.h
 E:/CLionProjects/ArithmeticCoding/binio.h

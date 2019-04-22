@@ -6,6 +6,8 @@
 
 #include "binio.h"
 
+// http://compression.ru/download/ar.html
+
 
 //#define DEBUG_DATA_OUTPUT
 

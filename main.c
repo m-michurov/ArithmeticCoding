@@ -11,7 +11,9 @@
 
 //#define DEBUG_DATA_OUTPUT
 
+#ifndef REG_BITS
 #define REG_BITS        16u
+#endif
 
 #define MAX_FILE_SIZE   4294966500
 #define NO_OF_BYTES     256 // 2^8 do not change
@@ -108,7 +110,7 @@ static inline void update_frequencies(
 }
 
 
-long long int count_file_length(
+static inline long long int count_file_length(
         FILE *in,
         unsigned char *input_buff)
 {
@@ -158,7 +160,7 @@ long long int count_file_length(
 }
 
 
-void BitsPlusFollow(
+static inline void BitsPlusFollow(
         IO_BUFF * out,
         int bit,
         unsigned int * bits_to_follow)
@@ -397,6 +399,13 @@ int EncodeFile(
             high += high + 1;
 
             value += value + BitRead(in);
+
+            if (in->data_corrupted == true)
+            {
+                // free memory
+
+                return -1;
+            }
         }
 
 #ifdef DEBUG_DATA_OUTPUT
@@ -481,7 +490,10 @@ int main(
 {
     if (argc == 4) {
         if (!strcmp(argv[1], "-e")) {
-            EncodeFile(argv[argc - 2], argv[argc - 1]);
+            if (-1 == EncodeFile(argv[argc - 2], argv[argc - 1]))
+            {
+                printf("Data is corrupted");
+            }
         }
         else if (!strcmp(argv[1], "-d")) {
 #ifdef DECODE

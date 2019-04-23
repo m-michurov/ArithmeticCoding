@@ -15,14 +15,22 @@
 
 #define BLOCK_SIZE      (size_t)(1024 * 1024)
 
+#ifndef REG_BITS
+#define REG_BITS        16u
+#endif
 
 #define WRITE   0
 #define READ    BLOCK_SIZE
 
 typedef struct st_BitBuff
 {
-    size_t byte_pos;
-    size_t bit_pos;
+    unsigned int byte_pos;
+    unsigned int bit_pos;
+
+    size_t read;
+
+    unsigned int garbage_bits;
+    bool data_corrupted;
 
     FILE * file;
 

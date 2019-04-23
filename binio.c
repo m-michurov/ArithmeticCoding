@@ -7,7 +7,7 @@ inline void BitWrite(
 #ifdef DEBUG_BIT_OUTPUT
     printf("%d", bit);
 #endif
-    out->string[out->byte_pos] += (bit & 0x01) << (7 - out->bit_pos++);
+    out->string[out->byte_pos] += ((unsigned int) bit & 0x01u) << (7u - out->bit_pos++);
 
     if (out->bit_pos > 7) {
         out->bit_pos = 0;
@@ -32,7 +32,7 @@ inline int BitRead(
     }
 
     if (in->byte_pos == BLOCK_SIZE) {
-        fread(in->string, 1, BLOCK_SIZE, in->file);
+        in->read = fread(in->string, 1, BLOCK_SIZE, in->file);
 
         in->byte_pos = 0;
         in->bit_pos = 0;
@@ -41,7 +41,17 @@ inline int BitRead(
     printf("%d", ((in->string[in->byte_pos]) >> (7 - in->bit_pos))  & 0x01);
 #endif
 
-    return ((in->string[in->byte_pos]) >> (7 - in->bit_pos++))  & 0x01;
+    if (in->byte_pos >= in->read)
+    {
+        in->garbage_bits++;
+
+        if (in->garbage_bits > REG_BITS - 2)
+        {
+            in->data_corrupted = true;
+        }
+    }
+
+    return (((unsigned int) in->string[in->byte_pos]) >> (7u - in->bit_pos++))  & 0x01u;
 }
 
 inline void ByteWrite(
@@ -49,7 +59,7 @@ inline void ByteWrite(
         unsigned char byte)
 {
     for (int k = 7; k >= 0; k--)
-        BitWrite(out, (byte >> k) & 0x01);
+        BitWrite(out, ((unsigned int) byte >> (unsigned int) k) & 0x01u);
 }
 
 inline unsigned char ByteRead(
@@ -58,7 +68,7 @@ inline unsigned char ByteRead(
     unsigned char byte = 0;
 
     for (int k = 7; k >= 0; k--)
-        byte += (BitRead(in) << k);
+        byte += ((unsigned int) BitRead(in) << (unsigned int) k);
 
     return byte;
 }
@@ -95,6 +105,7 @@ IO_BUFF * InitBinaryIO(
     }
 
     new_buff->file = file;
+    new_buff->data_corrupted = false;
     new_buff->byte_pos = mode;
     new_buff->bit_pos = 0;
 

@@ -112,6 +112,7 @@ IO_BUFF * InitBinaryIO(
 
     if (new_buff->string == NULL)
     {
+        free(new_buff);
         return NULL;
     }
 

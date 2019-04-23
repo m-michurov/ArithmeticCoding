@@ -3,4 +3,4 @@ project(ArithmeticCoding C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(ArithmeticCoding main.c binio.c binio.h bool.h)
+add_executable(ArithmeticCoding main.c binio.c binio.h bool.h errors.h)

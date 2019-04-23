@@ -7,5 +7,6 @@ CMakeFiles/ArithmeticCoding.dir/binio.c.obj: ../bool.h
 
 CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../binio.h
 CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../bool.h
+CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../errors.h
 CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../main.c
 

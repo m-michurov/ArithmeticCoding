@@ -5,6 +5,7 @@
 
 
 #include "binio.h"
+#include "errors.h"
 
 // http://compression.ru/download/ar.html
 
@@ -29,7 +30,13 @@
 #define EOF_SYMBOL      (NO_OF_BYTES + 1)
 
 
-static inline void scale_frequencies(
+static
+#ifdef FORCE_INLINE
+force_inline
+#else
+inline
+#endif
+void scale_frequencies(
         unsigned int * frequency,
         unsigned int * cumulative_frequency)
 {
@@ -177,6 +184,281 @@ void BitsPlusFollow(
     {
         BitWrite(out, 1 - bit);
     }
+}
+
+
+int encode(
+        char * in_file,
+        char * out_file)
+{
+    //register unsigned int byte_pos;
+    //register unsigned int bit_pos;
+
+    register unsigned int high = TOP_VALUE;
+    register unsigned int low = 0u;
+    register unsigned int range;
+
+    unsigned char * buff;
+    unsigned char file_size[4] = { 0 };
+
+    unsigned int frequencies[NO_OF_SYMBOLS + 1] = { 0 };
+    unsigned int cumulative_frequencies[NO_OF_SYMBOLS + 1] = { 0 };
+    unsigned int index_to_char[NO_OF_BYTES + 2];
+    unsigned int input_file_len;
+    unsigned int encoded_len = 0u;
+    unsigned int bits_to_follow = 0u;
+
+
+    int char_to_index[NO_OF_BYTES];
+    int current_symbol;
+
+    size_t buff_len = 0;
+
+    FILE * fin;
+    FILE * fout;
+
+    fin = fopen(in_file, "rb");
+    fout = fopen(out_file, "wb");
+
+    IO_BUFF * out = InitBinaryIO(fout, WRITE);
+
+    if (fin == NULL || fout == NULL)
+    {
+        return FILE_ERROR;
+    }
+
+    buff = (unsigned char *) malloc(BLOCK_SIZE);
+
+    if (buff == NULL || out == NULL)
+    {
+        return ALLOCATION_ERROR;
+    }
+
+    input_file_len = (unsigned int) count_file_length(fin, buff);
+
+    reset_frequencies(frequencies, cumulative_frequencies, char_to_index, index_to_char);
+
+    fseek(fin, 0, 0);
+
+    // This ensures independence from unsigned int size
+    // on different platforms
+    file_size[0] = (unsigned char) ((input_file_len >> 24u) & 0xFFu);
+    file_size[1] = (unsigned char) ((input_file_len >> 16u) & 0xFFu);
+    file_size[2] = (unsigned char) ((input_file_len >> 8u) & 0xFFu);
+    file_size[3] = (unsigned char) ((input_file_len) & 0xFFu);
+
+
+    fwrite(file_size, 1, 4, fout);
+
+    printf("\nWrite file len: %u", input_file_len);
+
+    while ((buff_len = fread(buff, 1, BLOCK_SIZE, fin)) > 0)
+    {
+        for (int k = 0; k < buff_len; k++)
+        {
+            current_symbol = char_to_index[buff[k]];
+
+            range = high - low + 1;
+
+            high = low + cumulative_frequencies[current_symbol - 1] * range / cumulative_frequencies[0] - 1;
+            low = low + cumulative_frequencies[current_symbol] * range / cumulative_frequencies[0];
+
+            while (true)
+            {
+                if (high < HALF)
+                {
+                    BitsPlusFollow(out, 0, &bits_to_follow);
+                }
+                else if (low >= HALF)
+                {
+                    BitsPlusFollow(out, 1, &bits_to_follow);
+
+                    low -= HALF;
+                    high -= HALF;
+                }
+                else if ((low >= FIRST_QUARTER) && (high < THIRD_QUARTER))
+                {
+                    bits_to_follow++;
+
+                    low -= FIRST_QUARTER;
+                    high -= FIRST_QUARTER;
+                }
+                else
+                {
+                    break;
+                }
+
+                low += low;
+                high += high + 1;
+            }
+
+            update_frequencies(current_symbol, frequencies, cumulative_frequencies, char_to_index, index_to_char);
+        }
+
+        encoded_len += buff_len;
+        printf("\rEncoding: %.2lf %%", (double) encoded_len / input_file_len * 100);
+    }
+
+    bits_to_follow++;
+    if (low < FIRST_QUARTER)
+    {
+        BitsPlusFollow(out, 0, &bits_to_follow);
+    }
+    else
+    {
+        BitsPlusFollow(out, 1, &bits_to_follow);
+    }
+
+    EndWrite(out);
+
+    fclose(fin);
+    fclose(fout);
+
+    free(buff);
+    free(out->string);
+    free(out);
+
+    return 0;
+}
+
+
+int decode(
+        char * in_file,
+        char * out_file)
+{
+    register unsigned int high = TOP_VALUE;
+    register unsigned int low = 0u;
+    register unsigned int range;
+    register unsigned int value = 0u;
+    register unsigned int frequency;
+
+    unsigned char * buff;
+    unsigned char file_size[4] = { 0 };
+
+    unsigned int frequencies[NO_OF_SYMBOLS + 1] = { 0 };
+    unsigned int cumulative_frequencies[NO_OF_SYMBOLS + 1] = { 0 };
+    unsigned int index_to_char[NO_OF_BYTES + 2];
+    unsigned int input_file_len;
+    unsigned int decoded = 0u;
+    unsigned int out_pos = 0u;
+
+
+    int char_to_index[NO_OF_BYTES];
+    int current_symbol;
+
+    FILE * fin;
+    FILE * fout;
+
+    fin = fopen(in_file, "rb");
+    fout = fopen(out_file, "wb");
+
+    IO_BUFF * in = InitBinaryIO(fin, READ);
+
+    if (fin == NULL || fout == NULL)
+    {
+        return FILE_ERROR;
+    }
+
+    buff = (unsigned char *) malloc(BLOCK_SIZE);
+
+    if (buff == NULL || in == NULL)
+    {
+        return ALLOCATION_ERROR;
+    }
+
+    fread(file_size, 1, 4, fin);
+
+    input_file_len = ((unsigned int) file_size[0] << 24u)
+                   + ((unsigned int) file_size[1] << 16u)
+                   + ((unsigned int) file_size[2] << 8u)
+                   +  (unsigned int) file_size[3];
+
+    printf("\nRead file len: %u", input_file_len);
+
+    reset_frequencies(frequencies, cumulative_frequencies, char_to_index, index_to_char);
+
+    for (int k = 0; k < REG_BITS; k++)
+    {
+        value += value + BitRead(in);
+    }
+
+    for (int f = 0; f < input_file_len; f++)
+    {
+        range = (high - low + 1);
+
+        frequency = ((value - low + 1) * cumulative_frequencies[0] - 1) / range;
+
+        for (current_symbol = 1; cumulative_frequencies[current_symbol] > frequency; current_symbol++);
+
+        high = low + cumulative_frequencies[current_symbol - 1] * range / cumulative_frequencies[0] - 1;
+        low = low + cumulative_frequencies[current_symbol] * range / cumulative_frequencies[0];
+
+        while (true)
+        {
+            if (high < HALF)
+            {
+                ;
+            }
+            else if (low >= HALF)
+            {
+                low -= HALF;
+                high -= HALF;
+
+                value -= HALF;
+            }
+            else if ((low >= FIRST_QUARTER) && (high < THIRD_QUARTER))
+            {
+                low -= FIRST_QUARTER;
+                high -= FIRST_QUARTER;
+                value -= FIRST_QUARTER;
+            }
+            else
+            {
+                break;
+            }
+
+            low += low;
+            high += high + 1;
+
+            value += value + BitRead(in);
+
+            /*
+            if (in->data_corrupted == true)
+            {
+                fclose(fin);
+                fclose(fout);
+
+                free(in->string);
+                free(in);
+
+                return DATA_CORRUPTION_ERROR;
+            }
+             */
+        }
+
+        buff[out_pos++] = (unsigned char) index_to_char[current_symbol];
+
+        if (out_pos == BLOCK_SIZE)
+        {
+            fwrite(buff, 1, BLOCK_SIZE, fout);
+            out_pos = 0;
+            decoded += BLOCK_SIZE;
+            printf("\rDecoding: %.2lf %%", (double) decoded / input_file_len * 100);
+        }
+
+        update_frequencies(current_symbol, frequencies, cumulative_frequencies, char_to_index, index_to_char);
+    }
+
+    fwrite(buff, 1, out_pos, fout);
+    printf("\rDecoding: %.2lf %%", (double) 100);
+
+    fclose(fin);
+    fclose(fout);
+
+    free(in->string);
+    free(in);
+
+    return 0;
 }
 
 
@@ -450,9 +732,6 @@ int EncodeFile(
     free(in->string);
     free(in);
 
-
-    // free the shit out of that memory
-
     return 0;
 }
 
@@ -494,9 +773,10 @@ int main(
         int argc,
         char * argv[])
 {
+#ifdef RELEASE
     if (argc == 4) {
         if (!strcmp(argv[1], "-e")) {
-            if (-1 == EncodeFile(argv[argc - 2], argv[argc - 1]))
+            if (-1 == encode(argv[argc - 2], argv[argc - 1]))
             {
                 printf("Data is corrupted");
             }
@@ -513,6 +793,12 @@ int main(
     else {
         printf("Bad command line arguments");
     }
+#else
+    if (argc == 4) {
+        encode(argv[argc - 2], argv[argc - 1]);
+        decode(argv[argc - 1], "new.bin");
+    }
+#endif
 
     return 0;
 }

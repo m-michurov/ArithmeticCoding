@@ -6,11 +6,7 @@
 
 #IncludeRegexTransform: 
 
-H:/NSUProgLabs/ArithmeticCoding/binio.c
-binio.h
-H:/NSUProgLabs/ArithmeticCoding/binio.h
-
-H:/NSUProgLabs/ArithmeticCoding/binio.h
+E:/CLionProjects/ArithmeticCoding/binio.h
 stdio.h
 -
 stdlib.h
@@ -18,11 +14,13 @@ stdlib.h
 string.h
 -
 bool.h
-H:/NSUProgLabs/ArithmeticCoding/bool.h
+E:/CLionProjects/ArithmeticCoding/bool.h
 
-H:/NSUProgLabs/ArithmeticCoding/bool.h
+E:/CLionProjects/ArithmeticCoding/bool.h
 
-H:/NSUProgLabs/ArithmeticCoding/main.c
+E:/CLionProjects/ArithmeticCoding/errors.h
+
+E:/CLionProjects/ArithmeticCoding/main.c
 stdio.h
 -
 string.h
@@ -32,5 +30,7 @@ stdlib.h
 time.h
 -
 binio.h
-H:/NSUProgLabs/ArithmeticCoding/binio.h
+E:/CLionProjects/ArithmeticCoding/binio.h
+errors.h
+E:/CLionProjects/ArithmeticCoding/errors.h
 

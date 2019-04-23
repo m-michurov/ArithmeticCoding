@@ -23,16 +23,21 @@
 
 #define MAX_FREQUENCY   (TOP_VALUE / 4)
 
+#define EOF_SYMBOL      NO_OF_BYTES + 1
+
 
 static inline void scale_frequencies(
         unsigned int * frequency,
         unsigned int * cumulative_frequency)
 {
-    for (int k = 0; k < NO_OF_BYTES; k++)
+    unsigned int accumulated = 0;
+
+    for (int k = NO_OF_BYTES; k >= 0; k--)
     {
         frequency[k] = (frequency[k] + 1) / 2;
 
-        cumulative_frequency[k] = cumulative_frequency[k - 1] + frequency[k];
+        cumulative_frequency[k] = accumulated;
+        accumulated += frequency[k];
     }
 }
 
@@ -43,7 +48,7 @@ long long int count_freqs(
         unsigned int * cumulative_frequency,
         unsigned char * input_buff)
 {
-    unsigned int read = 0;
+    size_t read = 0;
     unsigned int pos = 0;
 
     unsigned long long total = 0;
@@ -87,12 +92,22 @@ long long int count_freqs(
 
 static inline void reset_frequencies(
         unsigned int *frequency,
-        unsigned int *cumulative_frequency)
+        unsigned int *cumulative_frequency,
+        unsigned int * char_to_index,
+        unsigned int * index_to_char)
 {
-    for (unsigned int k = 0; k < NO_OF_BYTES; k++)
+    unsigned int k;
+
+    for (k = 0; k < NO_OF_BYTES; k++)
+    {
+        char_to_index[k] = k + 1;
+        index_to_char[k + 1] = k;
+    }
+
+    for (k = 0; k < NO_OF_BYTES; k++)
     {
         frequency[k] = 1;
-        cumulative_frequency[k] = k + 1;
+        cumulative_frequency[k] = NO_OF_BYTES - k;
     }
 
     frequency[0] = 0u;
@@ -100,20 +115,41 @@ static inline void reset_frequencies(
 
 
 static inline void update_frequencies(
-        int symbol,
+        unsigned int symbol,
         unsigned int * frequency,
-        unsigned int * cumulative_frequency)
+        unsigned int * cumulative_frequency,
+        unsigned int * char_to_index,
+        unsigned int * index_to_char)
 {
-    if (cumulative_frequency[NO_OF_BYTES - 1] >= MAX_FREQUENCY)
+    unsigned int i;
+    unsigned int ch_i;
+    unsigned int ch_symbol;
+
+    if (cumulative_frequency[0] >= MAX_FREQUENCY)
     {
         scale_frequencies(frequency, cumulative_frequency);
     }
 
+    for (i = symbol; frequency[i] == frequency[i - 1]; i--);
+
+    if (i < symbol)
+    {
+        ch_i = index_to_char[i];
+        ch_symbol = index_to_char[symbol];
+
+        index_to_char[i] = ch_symbol;
+        index_to_char[symbol] = ch_i;
+
+        char_to_index[ch_i] = symbol;
+        char_to_index[ch_symbol] = i;
+    }
+
     frequency[symbol]++;
 
-    for (int k = symbol; k < NO_OF_BYTES; k++)
+    while (i > 0)
     {
-        cumulative_frequency[k]++;
+        i--;
+        cumulative_frequency[i]++;
     }
 }
 
@@ -151,8 +187,10 @@ int EncodeFile(
     unsigned int input_file_len = 0u;
     unsigned int encoded_len = 0u;
 
-    unsigned int * c_f = calloc(NO_OF_BYTES + 1, sizeof(unsigned int));
-    unsigned int * cumulative_frequencies = c_f + 1;
+    unsigned int cumulative_frequencies[NO_OF_BYTES + 2];
+
+    unsigned int char_to_index[NO_OF_BYTES];
+    unsigned int index_to_char[NO_OF_BYTES + 2];
 
     size_t buff_len = 0;
 
@@ -170,7 +208,7 @@ int EncodeFile(
     input_file_len = (unsigned int) count_freqs(fin, frequencies, cumulative_frequencies, buff);
     // check the result
 
-    //reset_frequencies(frequencies, cumulative_frequencies);
+    reset_frequencies(frequencies, cumulative_frequencies, char_to_index, index_to_char);
 
     fseek(fin, 0, 0);
 
@@ -205,12 +243,10 @@ int EncodeFile(
 
     unsigned int high = TOP_VALUE;
     unsigned int low = 0u;
-    unsigned int prev_high = TOP_VALUE;
-    unsigned int prev_low = 0x0;
-    unsigned int div = cumulative_frequencies[NO_OF_BYTES - 1];
+    unsigned int range;
     unsigned int bits_to_follow = 0u;
 
-    unsigned char current_symbol;
+    unsigned int current_symbol;
 
     IO_BUFF * out = InitBinaryIO(fout, WRITE);
 
@@ -223,10 +259,12 @@ int EncodeFile(
     {
         for (int k = 0; k < buff_len; k++)
         {
-            current_symbol = buff[k];
+            current_symbol = char_to_index[buff[k]];
 
-            low = prev_low + cumulative_frequencies[current_symbol - 1] * (prev_high - prev_low + 1) / div;
-            high = prev_low + cumulative_frequencies[current_symbol] * (prev_high - prev_low + 1) / div - 1;
+            range = high - low + 1;
+
+            high = low + cumulative_frequencies[current_symbol - 1] * range / cumulative_frequencies[0] - 1;
+            low = low + cumulative_frequencies[current_symbol] * range / cumulative_frequencies[0];
 
             while (true)
             {
@@ -257,15 +295,7 @@ int EncodeFile(
                 high += high + 1;
             }
 
-            prev_high = high;
-            prev_low = low;
-#ifdef AD
-            for (int i = index[current_symbol]; i < unique_bytes_count + 1; i++)
-            {
-                cumulative_frequencies[i]++;
-            }
-#endif
-            //update_frequencies(current_symbol, frequencies, cumulative_frequencies);
+            update_frequencies(current_symbol, frequencies, cumulative_frequencies, char_to_index, index_to_char);
         }
 
         encoded_len += buff_len;
@@ -297,9 +327,8 @@ int EncodeFile(
     free(out->string);
     free(out);
 
-    prev_high = TOP_VALUE;
-    prev_low = 0u;
-    div = cumulative_frequencies[NO_OF_BYTES - 1];
+    high = TOP_VALUE;
+    low = 0u;
     bits_to_follow = 0u;
 
     unsigned int value = 0u;
@@ -309,19 +338,13 @@ int EncodeFile(
     fin = fopen(out_file, "rb");
     fout = fopen("new.bin", "wb");
 
-    //reset_frequencies(frequencies, cumulative_frequencies);
+    reset_frequencies(frequencies, cumulative_frequencies, char_to_index, index_to_char);
 
     fread(file_size, 1, 4, fin);
-#ifdef AD
-    for (int l = 1; l < unique_bytes_count +1; l++)
-    {
-        cumulative_frequencies[l] = cumulative_frequencies[l - 1] + 1;
-    }
-#endif
 
     IO_BUFF * in = InitBinaryIO(fin, READ);
 
-    #ifdef DEBUD_DATA_OUTPUT
+#ifdef DEBUD_DATA_OUTPUT
     printf("\n");
 #endif
     // Start decoding with same frequency table (dunno how to write it into file yet)
@@ -333,12 +356,14 @@ int EncodeFile(
 
     for (int f = 0; f < input_file_len; f++)
     {
-        frequency = ((value - prev_low + 1) * div - 1) / (prev_high - prev_low + 1);
+        range = (high - low + 1);
 
-        for (current_symbol = 0; cumulative_frequencies[current_symbol] <= frequency; current_symbol++);
+        frequency = ((value - low + 1) * cumulative_frequencies[0] - 1) / range;
 
-        low = prev_low + cumulative_frequencies[current_symbol - 1] * (prev_high - prev_low + 1) / div;
-        high = prev_low + cumulative_frequencies[current_symbol] * (prev_high - prev_low + 1) / div - 1;
+        for (current_symbol = 1; cumulative_frequencies[current_symbol] > frequency; current_symbol++);
+
+        high = low + cumulative_frequencies[current_symbol - 1] * range / cumulative_frequencies[0] - 1;
+        low = low + cumulative_frequencies[current_symbol] * range / cumulative_frequencies[0];
 
         while (true)
         {
@@ -370,14 +395,11 @@ int EncodeFile(
             value += value + BitRead(in);
         }
 
-        prev_high = high;
-        prev_low = low;
-
 #ifdef DEBUG_DATA_OUTPUT
         printf("%c", current_symbol);
 #endif
 
-        buff[out_pos++] = current_symbol;
+        buff[out_pos++] = (unsigned char) index_to_char[current_symbol];
 
         if (out_pos == BLOCK_SIZE)
         {
@@ -386,15 +408,8 @@ int EncodeFile(
             decoded += BLOCK_SIZE;
             printf("\rDecoding: %.2lf %%", (double) decoded / input_file_len * 100);
         }
-#ifdef AD
-        for (int i = index[current_symbol]; i < unique_bytes_count + 1; i++)
-        {
-            cumulative_frequencies[i]++;
-        }
-#endif
-       //update_frequencies(current_symbol, frequencies, cumulative_frequencies);
 
-
+        update_frequencies(current_symbol, frequencies, cumulative_frequencies, char_to_index, index_to_char);
     }
 
     fwrite(buff, 1, out_pos, fout);

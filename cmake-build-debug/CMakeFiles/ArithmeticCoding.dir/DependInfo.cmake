@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "E:/CLionProjects/ArithmeticCoding/binio.c" "E:/CLionProjects/ArithmeticCoding/cmake-build-debug/CMakeFiles/ArithmeticCoding.dir/binio.c.obj"
-  "E:/CLionProjects/ArithmeticCoding/main.c" "E:/CLionProjects/ArithmeticCoding/cmake-build-debug/CMakeFiles/ArithmeticCoding.dir/main.c.obj"
+  "H:/NSUProgLabs/ArithmeticCoding/binio.c" "H:/NSUProgLabs/ArithmeticCoding/cmake-build-debug/CMakeFiles/ArithmeticCoding.dir/binio.c.obj"
+  "H:/NSUProgLabs/ArithmeticCoding/main.c" "H:/NSUProgLabs/ArithmeticCoding/cmake-build-debug/CMakeFiles/ArithmeticCoding.dir/main.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

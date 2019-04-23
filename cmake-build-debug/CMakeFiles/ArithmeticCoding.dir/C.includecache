@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-E:/CLionProjects/ArithmeticCoding/binio.h
+H:/NSUProgLabs/ArithmeticCoding/binio.h
 stdio.h
 -
 stdlib.h
@@ -14,11 +14,11 @@ stdlib.h
 string.h
 -
 bool.h
-E:/CLionProjects/ArithmeticCoding/bool.h
+H:/NSUProgLabs/ArithmeticCoding/bool.h
 
-E:/CLionProjects/ArithmeticCoding/bool.h
+H:/NSUProgLabs/ArithmeticCoding/bool.h
 
-E:/CLionProjects/ArithmeticCoding/main.c
+H:/NSUProgLabs/ArithmeticCoding/main.c
 stdio.h
 -
 string.h
@@ -28,5 +28,5 @@ stdlib.h
 time.h
 -
 binio.h
-E:/CLionProjects/ArithmeticCoding/binio.h
+H:/NSUProgLabs/ArithmeticCoding/binio.h
 

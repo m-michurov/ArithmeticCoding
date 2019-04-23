@@ -160,7 +160,13 @@ static inline long long int count_file_length(
 }
 
 
-static inline void BitsPlusFollow(
+static
+#ifdef FORCE_INLINE
+force_inline
+#else
+inline
+#endif
+void BitsPlusFollow(
         IO_BUFF * out,
         int bit,
         unsigned int * bits_to_follow)

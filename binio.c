@@ -1,6 +1,12 @@
 #include "binio.h"
 
-inline void BitWrite(
+
+#ifdef FORCE_INLINE
+force_inline
+#else
+inline
+#endif
+void BitWrite(
         IO_BUFF * out,
         int bit)
 {
@@ -23,7 +29,12 @@ inline void BitWrite(
     }
 }
 
-inline int BitRead(
+#ifdef FORCE_INLINE
+force_inline
+#else
+inline
+#endif
+int BitRead(
         IO_BUFF * in)
 {
     if (in->bit_pos > 7) {

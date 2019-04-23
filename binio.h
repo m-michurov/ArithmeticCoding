@@ -22,6 +22,12 @@
 #define WRITE   0
 #define READ    BLOCK_SIZE
 
+
+
+#define force_inline __attribute__((always_inline)) inline
+
+//#define FORCE_INLINE
+
 typedef struct st_BitBuff
 {
     unsigned int byte_pos;

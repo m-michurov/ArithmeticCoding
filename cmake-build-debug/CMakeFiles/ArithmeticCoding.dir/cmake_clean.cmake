@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/ArithmeticCoding.dir/main.c.obj"
   "CMakeFiles/ArithmeticCoding.dir/binio.c.obj"
+  "CMakeFiles/ArithmeticCoding.dir/coding.c.obj"
+  "CMakeFiles/ArithmeticCoding.dir/test.c.obj"
   "ArithmeticCoding.pdb"
   "ArithmeticCoding.exe"
   "ArithmeticCoding.exe.manifest"

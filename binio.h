@@ -13,7 +13,9 @@
 //#define DEBUG_BIT_OUTPUT
 
 
+#ifndef BLOCK_SIZE
 #define BLOCK_SIZE      (size_t)(1024 * 1024)
+#endif
 
 #ifndef REG_BITS
 #define REG_BITS        16u
@@ -26,7 +28,7 @@
 
 #define force_inline __attribute__((always_inline)) inline
 
-//#define FORCE_INLINE
+#define FORCE_INLINE
 
 typedef struct st_BitBuff
 {
@@ -53,21 +55,8 @@ int BitRead(
         IO_BUFF *in);
 
 
-void ByteWrite(
-        IO_BUFF * out,
-        unsigned char byte);
-
-
-unsigned char ByteRead(
-        IO_BUFF * in);
-
-
 void EndWrite(
         IO_BUFF * out);
-
-
-void NextByte(
-        IO_BUFF * buff);
 
 // Boolean variable "mode" should be
 // either WRITE or READ

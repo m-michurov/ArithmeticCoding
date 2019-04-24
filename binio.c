@@ -65,24 +65,6 @@ int BitRead(
     return (((unsigned int) in->string[in->byte_pos]) >> (7u - in->bit_pos++))  & 0x01u;
 }
 
-inline void ByteWrite(
-        IO_BUFF *out,
-        unsigned char byte)
-{
-    for (int k = 7; k >= 0; k--)
-        BitWrite(out, ((unsigned int) byte >> (unsigned int) k) & 0x01u);
-}
-
-inline unsigned char ByteRead(
-        IO_BUFF * in)
-{
-    unsigned char byte = 0;
-
-    for (int k = 7; k >= 0; k--)
-        byte += ((unsigned int) BitRead(in) << (unsigned int) k);
-
-    return byte;
-}
 
 inline void EndWrite(
         IO_BUFF * out)
@@ -90,12 +72,6 @@ inline void EndWrite(
     fwrite(out->string, 1, out->byte_pos + (size_t)(out->bit_pos ? 1 : 0), out->file);
 }
 
-inline void NextByte(
-        IO_BUFF *buff)
-{
-    buff->byte_pos += buff->bit_pos ? 1 : 0;
-    buff->bit_pos = 0;
-}
 
 IO_BUFF * InitBinaryIO(
         FILE * file,

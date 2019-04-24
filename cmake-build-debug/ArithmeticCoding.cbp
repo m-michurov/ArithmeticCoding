@@ -83,10 +83,25 @@
 		<Unit filename="E:/CLionProjects/ArithmeticCoding/bool.h">
 			<Option target="ArithmeticCoding"/>
 		</Unit>
+		<Unit filename="E:/CLionProjects/ArithmeticCoding/coding.c">
+			<Option target="ArithmeticCoding"/>
+		</Unit>
+		<Unit filename="E:/CLionProjects/ArithmeticCoding/coding.h">
+			<Option target="ArithmeticCoding"/>
+		</Unit>
 		<Unit filename="E:/CLionProjects/ArithmeticCoding/errors.h">
 			<Option target="ArithmeticCoding"/>
 		</Unit>
+		<Unit filename="E:/CLionProjects/ArithmeticCoding/iodefinitions.h">
+			<Option target="ArithmeticCoding"/>
+		</Unit>
 		<Unit filename="E:/CLionProjects/ArithmeticCoding/main.c">
+			<Option target="ArithmeticCoding"/>
+		</Unit>
+		<Unit filename="E:/CLionProjects/ArithmeticCoding/test.c">
+			<Option target="ArithmeticCoding"/>
+		</Unit>
+		<Unit filename="E:/CLionProjects/ArithmeticCoding/test.h">
 			<Option target="ArithmeticCoding"/>
 		</Unit>
 		<Unit filename="E:/CLionProjects/ArithmeticCoding/CMakeLists.txt">

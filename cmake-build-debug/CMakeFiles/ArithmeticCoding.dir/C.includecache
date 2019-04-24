@@ -18,19 +18,39 @@ E:/CLionProjects/ArithmeticCoding/bool.h
 
 E:/CLionProjects/ArithmeticCoding/bool.h
 
-E:/CLionProjects/ArithmeticCoding/errors.h
+E:/CLionProjects/ArithmeticCoding/coding.c
+coding.h
+E:/CLionProjects/ArithmeticCoding/coding.h
 
-E:/CLionProjects/ArithmeticCoding/main.c
+E:/CLionProjects/ArithmeticCoding/coding.h
 stdio.h
--
-string.h
 -
 stdlib.h
 -
-time.h
+limits.h
 -
 binio.h
 E:/CLionProjects/ArithmeticCoding/binio.h
+errors.h
+E:/CLionProjects/ArithmeticCoding/errors.h
+iodefinitions.h
+E:/CLionProjects/ArithmeticCoding/iodefinitions.h
+
+E:/CLionProjects/ArithmeticCoding/errors.h
+
+E:/CLionProjects/ArithmeticCoding/iodefinitions.h
+
+E:/CLionProjects/ArithmeticCoding/test.c
+test.h
+E:/CLionProjects/ArithmeticCoding/test.h
+
+E:/CLionProjects/ArithmeticCoding/test.h
+stdio.h
+-
+time.h
+-
+coding.h
+E:/CLionProjects/ArithmeticCoding/coding.h
 errors.h
 E:/CLionProjects/ArithmeticCoding/errors.h
 

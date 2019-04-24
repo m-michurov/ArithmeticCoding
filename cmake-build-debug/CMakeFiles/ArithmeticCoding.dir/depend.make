@@ -5,8 +5,26 @@ CMakeFiles/ArithmeticCoding.dir/binio.c.obj: ../binio.c
 CMakeFiles/ArithmeticCoding.dir/binio.c.obj: ../binio.h
 CMakeFiles/ArithmeticCoding.dir/binio.c.obj: ../bool.h
 
+CMakeFiles/ArithmeticCoding.dir/coding.c.obj: ../binio.h
+CMakeFiles/ArithmeticCoding.dir/coding.c.obj: ../bool.h
+CMakeFiles/ArithmeticCoding.dir/coding.c.obj: ../coding.c
+CMakeFiles/ArithmeticCoding.dir/coding.c.obj: ../coding.h
+CMakeFiles/ArithmeticCoding.dir/coding.c.obj: ../errors.h
+CMakeFiles/ArithmeticCoding.dir/coding.c.obj: ../iodefinitions.h
+
 CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../binio.h
 CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../bool.h
+CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../coding.h
 CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../errors.h
+CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../iodefinitions.h
 CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../main.c
+CMakeFiles/ArithmeticCoding.dir/main.c.obj: ../test.h
+
+CMakeFiles/ArithmeticCoding.dir/test.c.obj: ../binio.h
+CMakeFiles/ArithmeticCoding.dir/test.c.obj: ../bool.h
+CMakeFiles/ArithmeticCoding.dir/test.c.obj: ../coding.h
+CMakeFiles/ArithmeticCoding.dir/test.c.obj: ../errors.h
+CMakeFiles/ArithmeticCoding.dir/test.c.obj: ../iodefinitions.h
+CMakeFiles/ArithmeticCoding.dir/test.c.obj: ../test.c
+CMakeFiles/ArithmeticCoding.dir/test.c.obj: ../test.h
 

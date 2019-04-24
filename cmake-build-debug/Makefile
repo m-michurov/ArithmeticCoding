@@ -149,6 +149,33 @@ binio.c.s:
 	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/binio.c.s
 .PHONY : binio.c.s
 
+coding.obj: coding.c.obj
+
+.PHONY : coding.obj
+
+# target to build an object file
+coding.c.obj:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/coding.c.obj
+.PHONY : coding.c.obj
+
+coding.i: coding.c.i
+
+.PHONY : coding.i
+
+# target to preprocess a source file
+coding.c.i:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/coding.c.i
+.PHONY : coding.c.i
+
+coding.s: coding.c.s
+
+.PHONY : coding.s
+
+# target to generate assembly for a file
+coding.c.s:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/coding.c.s
+.PHONY : coding.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -176,6 +203,33 @@ main.c.s:
 	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/main.c.s
 .PHONY : main.c.s
 
+test.obj: test.c.obj
+
+.PHONY : test.obj
+
+# target to build an object file
+test.c.obj:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/test.c.obj
+.PHONY : test.c.obj
+
+test.i: test.c.i
+
+.PHONY : test.i
+
+# target to preprocess a source file
+test.c.i:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/test.c.i
+.PHONY : test.c.i
+
+test.s: test.c.s
+
+.PHONY : test.s
+
+# target to generate assembly for a file
+test.c.s:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/test.c.s
+.PHONY : test.c.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -188,9 +242,15 @@ help:
 	@echo ... binio.obj
 	@echo ... binio.i
 	@echo ... binio.s
+	@echo ... coding.obj
+	@echo ... coding.i
+	@echo ... coding.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... test.obj
+	@echo ... test.i
+	@echo ... test.s
 .PHONY : help
 
 

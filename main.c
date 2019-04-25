@@ -4,14 +4,13 @@
 #include <time.h>
 
 
-#include "binio.h"
 #include "coding.h"
 #include "errors.h"
 #include "iodefinitions.h"
 #include "test.h"
 
 
-//#define RELEASE
+#define RELEASE
 
 
 int main(
@@ -21,14 +20,25 @@ int main(
 #ifdef RELEASE
     int errcode;
 
-    if (argc == 4) {
+    clock_t start;
+    clock_t end;
+
+    if (argc == 4 || argc == 5) {
         if (!strcmp(argv[1], "-e"))
         {
+            start = clock();
             errcode = encode(argv[argc - 2], argv[argc - 1]);
+            end = clock();
 
             switch (errcode) {
                 case SUCCESS:
-                    printf("\nSuccessfully encoded \"%s\" to \"%s\"\n", argv[argc - 2], argv[argc - 1]);
+                    printf("Successfully encoded \"%s\" to \"%s\"\n", argv[argc - 2], argv[argc - 1]);
+
+                    if (!strcmp(argv[2], "-t"))
+                    {
+                        printf("Encode time: %.2lf s\n", (double) (end - start) / 1000);
+                    }
+
                     break;
                 case FILE_SIZE_ERROR:
                     printf("Input file \"%s\" exceeds maximum supported file size of %u %s\n", argv[argc - 2],
@@ -49,11 +59,19 @@ int main(
         }
         else if (!strcmp(argv[1], "-d"))
         {
-            errcode = decode(argv[argc - 1], "new.bin");
+            start = clock();
+            errcode = decode(argv[argc - 2], argv[argc - 1]);
+            end = clock();
 
             switch (errcode) {
                 case SUCCESS:
-                    printf("\nSuccessfully decoded \"%s\" to \"%s\"\n", argv[argc - 2], argv[argc - 1]);
+                    printf("Successfully decoded \"%s\" to \"%s\"\n", argv[argc - 2], argv[argc - 1]);
+
+                    if (!strcmp(argv[2], "-t"))
+                    {
+                        printf("Decode time: %.2lf s\n", (double) (end - start) / 1000);
+                    }
+
                     break;
                 case DATA_CORRUPTION_ERROR:
                     printf("\nData is corrupted and cannot be decoded\n\n");
@@ -72,19 +90,13 @@ int main(
             }
         }
         else {
-            printf("Bad command line arguments");
+            printf("Bad argument: \"%s\".\nUsage: -[e|d] -[t] <input file name> <output file name>\n", argv[1]);
         }
     }
     else {
-        printf("Bad command line arguments");
+        printf("Bad number of arguments.\nUsage: -[e|d] -[t] <input file name> <output file name>\n");
     }
 #else
-/*
-    encode("ArithmeticCoding.exe", "out.txt");
-    decode("out.txt", "ArithmeticCoding.exe.bin");
-
-    printf("%d", filecmp("ArithmeticCoding.exe", "ArithmeticCoding.exe.bin"));
-*/
 
     test();
 

@@ -118,7 +118,7 @@ void test(
 
     for (int y = 0; y < 7; y++)
     {
-        printf("TEST %d/8:\n", y + 1);
+        printf("TEST %d/7:\n", y + 1);
 
         encode_start = clock();
         errcode = encode(infilenames[y], "out.txt");
@@ -126,12 +126,16 @@ void test(
 
         if (!errcode)
         {
+            printf("\tEncode time: %.2lf s\n", (double) (encode_end - encode_start) / 1000);
+
             decode_start = clock();
             errcode = decode("out.txt", newfilenames[y]);
             decode_end = clock();
 
             if (!errcode)
             {
+                printf("\tDecode time: %.2lf s\n", (double) (decode_end - decode_start) / 1000);
+
                 errcode = filecmp(infilenames[y], newfilenames[y]);
 
                 if (!errcode)
@@ -141,8 +145,7 @@ void test(
                     size = filesize(infilenames[y]);
                     size_comp = filesize("out.txt");
 
-                    printf("\tEncode time %.2lf\n\tDecode time %.2lf\n\t%s: compressed %u %s to %u %s\n\tCompression rate %.2lf\n",
-                           (double) (encode_end - encode_start) / 1000, (double) (decode_end - decode_start) / 1000,
+                    printf("\t\"%s\": compressed %u %s to %u %s\n\tCompression rate %.2lf\n",
                             infilenames[y], FORMAT_SIZE_SIZE(size), FORMAT_SIZE_PREFIX(size),
                                             FORMAT_SIZE_SIZE(size_comp), FORMAT_SIZE_PREFIX(size_comp),
                            (double) size / size_comp);

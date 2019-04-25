@@ -1,14 +1,15 @@
 #include "coding.h"
 
 
-#define PERCENTAGE_OUTPUT
+static int char_to_index[NO_OF_BYTES];
+static int frequency[NO_OF_SYMBOLS + 1] = { 0 };
+static int cumulative_frequency[NO_OF_SYMBOLS + 1] = { 0 };
+
+static unsigned int index_to_char[NO_OF_BYTES + 2];
 
 
 static void reset_frequencies(
-        unsigned int * frequency,
-        unsigned int * cumulative_frequency,
-        int * char_to_index,
-        unsigned int * index_to_char)
+        void)
 {
     unsigned int k;
 
@@ -27,24 +28,19 @@ static void reset_frequencies(
     frequency[0] = 0u;
 }
 
-static
-#ifdef FORCE_INLINE
-force_inline
-#else
-inline
-#endif
-void update_frequencies(
-        int symbol,
-        unsigned int * frequency,
-        unsigned int * cumulative_frequency,
-        int * char_to_index,
-        unsigned int * index_to_char)
-{
-    unsigned int ch_i;
-    unsigned int ch_symbol;
-    unsigned int accumulated = 0;
 
-    int i;
+static force_inline void update_frequencies(
+        int symbol)
+{
+    static unsigned int ch_i;
+    static unsigned int ch_symbol;
+    static unsigned int accumulated;
+
+    static int * c_pointer;
+
+    accumulated = 0;
+
+    static int i;
 
     if (cumulative_frequency[0] == MAX_FREQUENCY)
     {
@@ -73,10 +69,11 @@ void update_frequencies(
 
     frequency[i]++;
 
-    while (i > 0)
+    c_pointer = cumulative_frequency + i;
+
+    while (c_pointer > cumulative_frequency)
     {
-        i--;
-        cumulative_frequency[i]++;
+        (*(--c_pointer))++;
     }
 }
 
@@ -98,7 +95,7 @@ static long long int count_file_length(
                total > 1023 ? (total > 1048575 ? "MiB" : "KiB") : "B");
     }
 
-    printf("\r\n\tDone reading!\n");
+    printf("\n");
 
     if (total > MAX_FILE_SIZE)
     {
@@ -109,50 +106,26 @@ static long long int count_file_length(
 }
 
 
-static
-#ifdef FORCE_INLINE
-force_inline
-#else
-inline
-#endif
-void BitsPlusFollow(
-        IO_BUFF * out,
-        int bit,
-        unsigned int * bits_to_follow)
-{
-    BitWrite(out, bit);
-
-    for ( ; (*bits_to_follow) > 0; (*bits_to_follow) -= 1)
-    {
-        BitWrite(out, 1 - bit);
-    }
-}
-
-
 int encode(
         char * in_file,
         char * out_file)
 {
-    //register unsigned int byte_pos;
-    //register unsigned int bit_pos;
+    register int byte_pos = 0;
+    register int bit_pos = 0;
+    register int bits_to_follow = 0u;
 
-    register unsigned int high = TOP_VALUE;
-    register unsigned int low = 0u;
-    register unsigned int range;
+    register int high = TOP_VALUE;
+    register int low = 0u;
+    register int range;
+
+    register int current_symbol;
 
     unsigned char * buff;
+    unsigned char * bit_buff;
     unsigned char file_size[4] = { 0 };
 
-    unsigned int frequencies[NO_OF_SYMBOLS + 1] = { 0 };
-    unsigned int cumulative_frequencies[NO_OF_SYMBOLS + 1] = { 0 };
-    unsigned int index_to_char[NO_OF_BYTES + 2];
     unsigned int encoded_len = 0u;
-    unsigned int bits_to_follow = 0u;
     unsigned int input_file_len;
-
-
-    int char_to_index[NO_OF_BYTES];
-    int current_symbol;
 
     size_t buff_len = 0;
 
@@ -161,8 +134,6 @@ int encode(
 
     fin = fopen(in_file, "rb");
     fout = fopen(out_file, "wb");
-
-    IO_BUFF * out = InitBinaryIO(fout, WRITE);
 
     if (fin == NULL)
     {
@@ -175,9 +146,12 @@ int encode(
     }
 
     buff = (unsigned char *) malloc(BLOCK_SIZE);
+    bit_buff = (unsigned char *) calloc(BLOCK_SIZE, 1);
 
-    if (buff == NULL || out == NULL)
+    if (buff == NULL || bit_buff == NULL)
     {
+        free(buff);
+        free(bit_buff);
         return ALLOCATION_ERROR;
     }
 
@@ -188,7 +162,7 @@ int encode(
         return FILE_SIZE_ERROR;
     }
 
-    reset_frequencies(frequencies, cumulative_frequencies, char_to_index, index_to_char);
+    reset_frequencies();
 
     fseek(fin, 0, 0);
 
@@ -207,18 +181,18 @@ int encode(
 
             range = high - low + 1;
 
-            high = low + cumulative_frequencies[current_symbol - 1] * range / cumulative_frequencies[0] - 1;
-            low = low + cumulative_frequencies[current_symbol] * range / cumulative_frequencies[0];
+            high = low + cumulative_frequency[current_symbol - 1] * range / cumulative_frequency[0] - 1;
+            low = low + cumulative_frequency[current_symbol] * range / cumulative_frequency[0];
 
             while (true)
             {
                 if (high < HALF)
                 {
-                    BitsPlusFollow(out, 0, &bits_to_follow);
+                    BitsPlusFollow0(bit_pos, byte_pos, bit_buff);
                 }
                 else if (low >= HALF)
                 {
-                    BitsPlusFollow(out, 1, &bits_to_follow);
+                    BitsPlusFollow1(bit_pos, byte_pos, bit_buff);
 
                     low -= HALF;
                     high -= HALF;
@@ -239,7 +213,7 @@ int encode(
                 high += high + 1;
             }
 
-            update_frequencies(current_symbol, frequencies, cumulative_frequencies, char_to_index, index_to_char);
+            update_frequencies(current_symbol);
         }
 
         encoded_len += buff_len;
@@ -251,25 +225,24 @@ int encode(
     bits_to_follow++;
     if (low < FIRST_QUARTER)
     {
-        BitsPlusFollow(out, 0, &bits_to_follow);
+        BitsPlusFollow0(bit_pos, byte_pos, bit_buff);
     }
     else
     {
-        BitsPlusFollow(out, 1, &bits_to_follow);
+        BitsPlusFollow1(bit_pos, byte_pos, bit_buff);
     }
 
 #ifdef PERCENTAGE_OUTPUT
     printf("\n");
 #endif
 
-    EndWrite(out);
+    fwrite(bit_buff, 1, (size_t) byte_pos + (bit_pos ? 1 : 0), fout);
 
     fclose(fin);
     fclose(fout);
 
     free(buff);
-    free(out->string);
-    free(out);
+    free(bit_buff);
 
     return 0;
 }
@@ -279,32 +252,33 @@ int decode(
         char * in_file,
         char * out_file)
 {
-    register unsigned int high = TOP_VALUE;
-    register unsigned int low = 0u;
-    register unsigned int range;
-    register unsigned int value = 0u;
-    register unsigned int frequency;
+    register int byte_pos = 0;
+    register int bit_pos = 0;
+
+    register int high = TOP_VALUE;
+    register int low = 0u;
+    register int range;
+    register int value = 0u;
+    register int frequency;
+
+    register int current_symbol;
 
     unsigned char * buff;
+    unsigned char * bit_buff;
     unsigned char file_size[4] = { 0 };
 
-    unsigned int frequencies[NO_OF_SYMBOLS + 1] = { 0 };
-    unsigned int cumulative_frequencies[NO_OF_SYMBOLS + 1] = { 0 };
-    unsigned int index_to_char[NO_OF_BYTES + 2];
     unsigned int decoded = 0u;
     unsigned int out_pos = 0u;
     unsigned int input_file_len;
+    /*unsigned int read;*/
 
-    int char_to_index[NO_OF_BYTES];
-    int current_symbol;
+    int * c_pointer;
 
     FILE * fin;
     FILE * fout;
 
     fin = fopen(in_file, "rb");
     fout = fopen(out_file, "wb");
-
-    IO_BUFF * in = InitBinaryIO(fin, READ);
 
     if (fin == NULL)
     {
@@ -330,28 +304,40 @@ int decode(
 
     buff = (unsigned char *) malloc(BLOCK_SIZE);
 
-    if (buff == NULL || in == NULL)
+    bit_buff = (unsigned char *) calloc(BLOCK_SIZE, 1);
+
+    if (buff == NULL || bit_buff == NULL)
     {
+        free(buff);
+        free(bit_buff);
         return ALLOCATION_ERROR;
     }
 
-    reset_frequencies(frequencies, cumulative_frequencies, char_to_index, index_to_char);
+    reset_frequencies();
+
+    /*read = */fread(bit_buff, 1, BLOCK_SIZE, fin);
 
     for (int k = 0; k < REG_BITS; k++)
     {
-        value += value + BitRead(in);
+        value += value + ((bit_buff[byte_pos] >> (7u - bit_pos++)) & 0x01);
+
+        if (bit_pos > 7)
+        {
+            bit_pos = 0;
+            byte_pos++;
+        }
     }
 
     for (int f = 0; f < input_file_len; f++)
     {
         range = (high - low + 1);
 
-        frequency = ((value - low + 1) * cumulative_frequencies[0] - 1) / range;
+        frequency = ((value - low + 1) * cumulative_frequency[0] - 1) / range;
 
-        for (current_symbol = 1; cumulative_frequencies[current_symbol] > frequency; current_symbol++);
+        for (current_symbol = 1, c_pointer = cumulative_frequency + 1; *c_pointer > frequency; current_symbol++, c_pointer++);
 
-        high = low + cumulative_frequencies[current_symbol - 1] * range / cumulative_frequencies[0] - 1;
-        low = low + cumulative_frequencies[current_symbol] * range / cumulative_frequencies[0];
+        high = low + *(c_pointer - 1) * range / cumulative_frequency[0] - 1;
+        low = low + *c_pointer * range / cumulative_frequency[0];
 
         while (true)
         {
@@ -380,19 +366,29 @@ int decode(
             low += low;
             high += high + 1;
 
-            value += value + BitRead(in);
-/*
-            if (in->data_corrupted == true)
+            value += value + ((bit_buff[byte_pos] >> (7u - bit_pos++)) & 0x01);
+
+            if (bit_pos > 7)
             {
-                fclose(fin);
-                fclose(fout);
+                bit_pos = 0;
+                byte_pos++;
 
-                free(in->string);
-                free(in);
+                if (byte_pos == BLOCK_SIZE)
+                {
+                    byte_pos = 0;
+/*
+                    if (read == 0)
+                    {
+                        free(buff);
+                        free(bit_buff);
 
-                return DATA_CORRUPTION_ERROR;
+                        fclose(fin);
+                        fclose(fout);
+                    }
+*/
+                    /*read = */fread(bit_buff, 1, BLOCK_SIZE, fin);
+                }
             }
-            */
         }
 
         buff[out_pos++] = (unsigned char) index_to_char[current_symbol];
@@ -401,14 +397,14 @@ int decode(
         {
             fwrite(buff, 1, BLOCK_SIZE, fout);
             out_pos = 0;
+#ifdef PERCENTAGE_OUTPUT
             decoded += BLOCK_SIZE;
 
-#ifdef PERCENTAGE_OUTPUT
             printf("\r\tDecoding: %.2lf %%", (double) decoded / input_file_len * 100);
 #endif
         }
 
-        update_frequencies(current_symbol, frequencies, cumulative_frequencies, char_to_index, index_to_char);
+        update_frequencies(current_symbol);
     }
 
     fwrite(buff, 1, out_pos, fout);
@@ -421,9 +417,6 @@ int decode(
 
     fclose(fin);
     fclose(fout);
-
-    free(in->string);
-    free(in);
 
     return 0;
 }

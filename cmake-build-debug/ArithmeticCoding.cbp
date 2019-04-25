@@ -74,12 +74,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="E:/CLionProjects/ArithmeticCoding/binio.c">
-			<Option target="ArithmeticCoding"/>
-		</Unit>
-		<Unit filename="E:/CLionProjects/ArithmeticCoding/binio.h">
-			<Option target="ArithmeticCoding"/>
-		</Unit>
 		<Unit filename="E:/CLionProjects/ArithmeticCoding/bool.h">
 			<Option target="ArithmeticCoding"/>
 		</Unit>

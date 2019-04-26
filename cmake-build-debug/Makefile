@@ -47,24 +47,13 @@ RM = "E:\CLion 2018.2.7\bin\cmake\win\bin\cmake.exe" -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = E:\CLionProjects\ArithmeticCodingAdaptive
+CMAKE_SOURCE_DIR = E:\CLionProjects\ArithmeticCoding
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug
+CMAKE_BINARY_DIR = E:\CLionProjects\ArithmeticCoding\cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
-
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	"E:\CLion 2018.2.7\bin\cmake\win\bin\cmake.exe" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -77,11 +66,22 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	"E:\CLion 2018.2.7\bin\cmake\win\bin\cmake.exe" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
+
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug\CMakeFiles E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCoding\cmake-build-debug\CMakeFiles E:\CLionProjects\ArithmeticCoding\cmake-build-debug\CMakeFiles\progress.marks
 	$(MAKE) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCoding\cmake-build-debug\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -110,17 +110,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ArithmeticCodingAdaptive
+# Target rules for targets named ArithmeticCoding
 
 # Build rule for target.
-ArithmeticCodingAdaptive: cmake_check_build_system
-	$(MAKE) -f CMakeFiles\Makefile2 ArithmeticCodingAdaptive
-.PHONY : ArithmeticCodingAdaptive
+ArithmeticCoding: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 ArithmeticCoding
+.PHONY : ArithmeticCoding
 
 # fast build rule for target.
-ArithmeticCodingAdaptive/fast:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/build
-.PHONY : ArithmeticCodingAdaptive/fast
+ArithmeticCoding/fast:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/build
+.PHONY : ArithmeticCoding/fast
 
 coding.obj: coding.c.obj
 
@@ -128,7 +128,7 @@ coding.obj: coding.c.obj
 
 # target to build an object file
 coding.c.obj:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/coding.c.obj
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/coding.c.obj
 .PHONY : coding.c.obj
 
 coding.i: coding.c.i
@@ -137,7 +137,7 @@ coding.i: coding.c.i
 
 # target to preprocess a source file
 coding.c.i:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/coding.c.i
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/coding.c.i
 .PHONY : coding.c.i
 
 coding.s: coding.c.s
@@ -146,7 +146,7 @@ coding.s: coding.c.s
 
 # target to generate assembly for a file
 coding.c.s:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/coding.c.s
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/coding.c.s
 .PHONY : coding.c.s
 
 main.obj: main.c.obj
@@ -155,7 +155,7 @@ main.obj: main.c.obj
 
 # target to build an object file
 main.c.obj:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/main.c.obj
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/main.c.obj
 .PHONY : main.c.obj
 
 main.i: main.c.i
@@ -164,7 +164,7 @@ main.i: main.c.i
 
 # target to preprocess a source file
 main.c.i:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/main.c.i
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/main.c.i
 .PHONY : main.c.i
 
 main.s: main.c.s
@@ -173,7 +173,7 @@ main.s: main.c.s
 
 # target to generate assembly for a file
 main.c.s:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/main.c.s
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/main.c.s
 .PHONY : main.c.s
 
 test.obj: test.c.obj
@@ -182,7 +182,7 @@ test.obj: test.c.obj
 
 # target to build an object file
 test.c.obj:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/test.c.obj
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/test.c.obj
 .PHONY : test.c.obj
 
 test.i: test.c.i
@@ -191,7 +191,7 @@ test.i: test.c.i
 
 # target to preprocess a source file
 test.c.i:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/test.c.i
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/test.c.i
 .PHONY : test.c.i
 
 test.s: test.c.s
@@ -200,7 +200,7 @@ test.s: test.c.s
 
 # target to generate assembly for a file
 test.c.s:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/test.c.s
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/test.c.s
 .PHONY : test.c.s
 
 # Help Target
@@ -209,9 +209,9 @@ help:
 	@echo ... all (the default if no target is provided)
 	@echo ... clean
 	@echo ... depend
-	@echo ... rebuild_cache
-	@echo ... ArithmeticCodingAdaptive
+	@echo ... ArithmeticCoding
 	@echo ... edit_cache
+	@echo ... rebuild_cache
 	@echo ... coding.obj
 	@echo ... coding.i
 	@echo ... coding.s

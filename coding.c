@@ -270,7 +270,6 @@ int decode(
     unsigned int decoded = 0u;
     unsigned int out_pos = 0u;
     unsigned int input_file_len;
-    /*unsigned int read;*/
 
     int * c_pointer;
 
@@ -315,7 +314,7 @@ int decode(
 
     reset_frequencies();
 
-    /*read = */fread(bit_buff, 1, BLOCK_SIZE, fin);
+    fread(bit_buff, 1, BLOCK_SIZE, fin);
 
     for (int k = 0; k < REG_BITS; k++)
     {
@@ -376,17 +375,8 @@ int decode(
                 if (byte_pos == BLOCK_SIZE)
                 {
                     byte_pos = 0;
-/*
-                    if (read == 0)
-                    {
-                        free(buff);
-                        free(bit_buff);
 
-                        fclose(fin);
-                        fclose(fout);
-                    }
-*/
-                    /*read = */fread(bit_buff, 1, BLOCK_SIZE, fin);
+                    fread(bit_buff, 1, BLOCK_SIZE, fin);
                 }
             }
         }

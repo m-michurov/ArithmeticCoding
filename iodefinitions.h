@@ -8,7 +8,4 @@
 #define FORMAT_SIZE_PREFIX(size) ((size) > 1023 ? ((size) > 1048575 ? "MiB" : "KiB") : "B")
 
 
-//#define PERCENTAGE_OUTPUT
-
-
 #endif

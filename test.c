@@ -94,7 +94,8 @@ void test(
             "miku.png",
             "ArithmeticCoding.exe",
             "outbreak.mp4",
-            "lll.mp3"
+            "lll.mp3",
+            "deutschland.mp4"
     };
     static char * newfilenames[] = {
             "in.txt.bin",
@@ -103,7 +104,8 @@ void test(
             "miku.png.bin",
             "ArithmeticCoding.exe.bin",
             "outbreak.mp4.bin",
-            "lll.mp3.bin"
+            "lll.mp3.bin",
+            "deutschland.mp4.bin"
     };
 
     int errcode;
@@ -116,9 +118,9 @@ void test(
     clock_t decode_start;
     clock_t decode_end;
 
-    for (int y = 0; y < 7; y++)
+    for (int y = 0; y < 8; y++)
     {
-        printf("TEST %d/7:\n", y + 1);
+        printf("TEST %d/8:\n", y + 1);
 
         encode_start = clock();
         errcode = encode(infilenames[y], "out.txt");

@@ -58,45 +58,45 @@ RM = "E:\CLion 2018.2.7\bin\cmake\win\bin\cmake.exe" -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = E:\CLionProjects\ArithmeticCodingAdaptive
+CMAKE_SOURCE_DIR = E:\CLionProjects\ArithmeticCoding
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug
+CMAKE_BINARY_DIR = E:\CLionProjects\ArithmeticCoding\cmake-build-debug
 
 #=============================================================================
-# Target rules for target CMakeFiles/ArithmeticCodingAdaptive.dir
+# Target rules for target CMakeFiles/ArithmeticCoding.dir
 
 # All Build rule for target.
-CMakeFiles/ArithmeticCodingAdaptive.dir/all:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/depend
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug\CMakeFiles --progress-num=1,2,3,4 "Built target ArithmeticCodingAdaptive"
-.PHONY : CMakeFiles/ArithmeticCodingAdaptive.dir/all
+CMakeFiles/ArithmeticCoding.dir/all:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/depend
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=E:\CLionProjects\ArithmeticCoding\cmake-build-debug\CMakeFiles --progress-num=1,2,3,4 "Built target ArithmeticCoding"
+.PHONY : CMakeFiles/ArithmeticCoding.dir/all
 
 # Include target in all.
-all: CMakeFiles/ArithmeticCodingAdaptive.dir/all
+all: CMakeFiles/ArithmeticCoding.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/ArithmeticCodingAdaptive.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug\CMakeFiles 4
-	$(MAKE) -f CMakeFiles\Makefile2 CMakeFiles/ArithmeticCodingAdaptive.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCodingAdaptive\cmake-build-debug\CMakeFiles 0
-.PHONY : CMakeFiles/ArithmeticCodingAdaptive.dir/rule
+CMakeFiles/ArithmeticCoding.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCoding\cmake-build-debug\CMakeFiles 4
+	$(MAKE) -f CMakeFiles\Makefile2 CMakeFiles/ArithmeticCoding.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start E:\CLionProjects\ArithmeticCoding\cmake-build-debug\CMakeFiles 0
+.PHONY : CMakeFiles/ArithmeticCoding.dir/rule
 
 # Convenience name for target.
-ArithmeticCodingAdaptive: CMakeFiles/ArithmeticCodingAdaptive.dir/rule
+ArithmeticCoding: CMakeFiles/ArithmeticCoding.dir/rule
 
-.PHONY : ArithmeticCodingAdaptive
-
-# clean rule for target.
-CMakeFiles/ArithmeticCodingAdaptive.dir/clean:
-	$(MAKE) -f CMakeFiles\ArithmeticCodingAdaptive.dir\build.make CMakeFiles/ArithmeticCodingAdaptive.dir/clean
-.PHONY : CMakeFiles/ArithmeticCodingAdaptive.dir/clean
+.PHONY : ArithmeticCoding
 
 # clean rule for target.
-clean: CMakeFiles/ArithmeticCodingAdaptive.dir/clean
+CMakeFiles/ArithmeticCoding.dir/clean:
+	$(MAKE) -f CMakeFiles\ArithmeticCoding.dir\build.make CMakeFiles/ArithmeticCoding.dir/clean
+.PHONY : CMakeFiles/ArithmeticCoding.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/ArithmeticCoding.dir/clean
 
 .PHONY : clean
 

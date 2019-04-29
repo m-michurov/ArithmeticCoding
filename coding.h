@@ -27,7 +27,7 @@
 #define BLOCK_SIZE      (size_t)(1024 * 1024)
 
 
-#define MAX_FILE_SIZE   (UINT_MAX - 64)
+#define MAX_FILE_SIZE   (1024 * 1024 * 1024 * 4 - 64)
 #define NO_OF_BYTES     256 // 2^8 do not change
 #define NO_OF_SYMBOLS   (NO_OF_BYTES + 1)
 

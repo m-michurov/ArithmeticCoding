@@ -24,12 +24,12 @@
 #define REG_BITS        16u
 
 
-#define BLOCK_SIZE      (size_t)(1024 * 1024)
+#define BLOCK_SIZE      (size_t)(1024u * 1024u)
 
 
-#define MAX_FILE_SIZE   (1024 * 1024 * 1024 * 4 - 64)
-#define NO_OF_BYTES     256 // 2^8 do not change
-#define NO_OF_SYMBOLS   (NO_OF_BYTES + 1)
+#define MAX_FILE_SIZE   (1024u * 1024u * 1024u * 4u - 64u)
+#define NO_OF_BYTES     256u // 2^8 do not change
+#define NO_OF_SYMBOLS   NO_OF_BYTES
 
 #define TOP_VALUE       ((1u << REG_BITS) - 1u)
 #define FIRST_QUARTER   (TOP_VALUE / 4 + 1)

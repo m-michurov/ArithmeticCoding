@@ -5,7 +5,7 @@ static int char_to_index[NO_OF_BYTES];
 static int frequency[NO_OF_SYMBOLS + 1] = { 0 };
 static int cumulative_frequency[NO_OF_SYMBOLS + 1] = { 0 };
 
-static unsigned int index_to_char[NO_OF_BYTES + 2];
+static unsigned int index_to_char[NO_OF_SYMBOLS + 1];
 
 
 static void reset_frequencies(
@@ -37,10 +37,9 @@ static force_inline void update_frequencies(
     static unsigned int accumulated;
 
     static int * c_pointer;
+    static int i;
 
     accumulated = 0;
-
-    static int i;
 
     if (cumulative_frequency[0] == MAX_FREQUENCY)
     {

@@ -10,7 +10,7 @@
 #include "test.h"
 
 
-//#define RELEASE
+#define RELEASE
 
 
 int main(

@@ -30,7 +30,7 @@ static void reset_frequencies(
 
 
 static force_inline void update_frequencies(
-        int symbol)
+        const int symbol)
 {
     static unsigned int ch_i;
     static unsigned int ch_symbol;
@@ -78,8 +78,8 @@ static force_inline void update_frequencies(
 
 
 static long long int count_file_length(
-        FILE *in,
-        unsigned char *input_buff)
+        FILE * in,
+        unsigned char * input_buff)
 {
     size_t read = 0;
 
@@ -90,8 +90,8 @@ static long long int count_file_length(
         total += read;
 
         printf("\r\tReading file: %llu %s   ",
-               total > 1023 ? (total > 1048575 ? total / 1048576 : total / 1024) : total,
-               total > 1023 ? (total > 1048575 ? "MiB" : "KiB") : "B");
+               FORMAT_SIZE_SIZE(total),
+               FORMAT_SIZE_PREFIX(total));
     }
 
     printf("\n");
@@ -106,8 +106,8 @@ static long long int count_file_length(
 
 
 int encode(
-        char * in_file,
-        char * out_file)
+        const char * in_file,
+        const char * out_file)
 {
     register int byte_pos = 0;
     register int bit_pos = 0;
@@ -123,7 +123,9 @@ int encode(
     unsigned char * bit_buff;
     unsigned char file_size[4] = { 0 };
 
+#ifdef PERCENTAGE_OUTPUT
     unsigned int encoded_len = 0u;
+#endif
     unsigned int input_file_len;
 
     size_t buff_len = 0;
@@ -215,8 +217,8 @@ int encode(
             update_frequencies(current_symbol);
         }
 
-        encoded_len += buff_len;
 #ifdef PERCENTAGE_OUTPUT
+        encoded_len += buff_len;
         printf("\r\tEncoding: %.2lf %%", (double) encoded_len / input_file_len * 100);
 #endif
     }
@@ -248,8 +250,8 @@ int encode(
 
 
 int decode(
-        char * in_file,
-        char * out_file)
+        const char * in_file,
+        const char * out_file)
 {
     register int byte_pos = 0;
     register int bit_pos = 0;
@@ -266,7 +268,9 @@ int decode(
     unsigned char * bit_buff;
     unsigned char file_size[4] = { 0 };
 
+#ifdef PERCENTAGE_OUTPUT
     unsigned int decoded = 0u;
+#endif
     unsigned int out_pos = 0u;
     unsigned int input_file_len;
 
@@ -406,6 +410,9 @@ int decode(
 
     fclose(fin);
     fclose(fout);
+
+    free(buff);
+    free(bit_buff);
 
     return 0;
 }

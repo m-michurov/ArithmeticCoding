@@ -118,13 +118,13 @@
 
 
 int encode(
-        char * in_file,
-        char * out_file);
+        const char * in_file,
+        const char * out_file);
 
 
 int decode(
-        char * in_file,
-        char * out_file);
+        const char * in_file,
+        const char * out_file);
 
 
 #endif

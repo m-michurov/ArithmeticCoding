@@ -29,7 +29,7 @@ int filecmp(
         return ALLOCATION_ERROR;
     }
 
-    while ((read2 = fread(buff2, 1, BLOCK_SIZE, file2)) == (read1 = fread(buff1, 1, BLOCK_SIZE, file1)) && read1 > 0)
+    while ((read2 = (unsigned int) fread(buff2, 1, BLOCK_SIZE, file2)) == (read1 = (unsigned int) fread(buff1, 1, BLOCK_SIZE, file1)) && read1 > 0)
     {
         if (memcmp(buff1, buff2, read1) != 0)
         {
@@ -90,22 +90,12 @@ void test(
     static char * infilenames[] = {
             "in.txt",
             "nier.mp4",
-            "shinobu.jpg",
-            "miku.png",
-            "ArithmeticCoding.exe",
-            "outbreak.mp4",
-            "lll.mp3",
-            "deutschland.mp4"
+            "ArithmeticCoding.exe"
     };
     static char * newfilenames[] = {
             "in.txt.bin",
             "nier.mp4.bin",
-            "shinobu.jpg.bin",
-            "miku.png.bin",
-            "ArithmeticCoding.exe.bin",
-            "outbreak.mp4.bin",
-            "lll.mp3.bin",
-            "deutschland.mp4.bin"
+            "ArithmeticCoding.exe.bin"
     };
 
     int errcode;
@@ -118,9 +108,9 @@ void test(
     clock_t decode_start;
     clock_t decode_end;
 
-    for (int y = 0; y < 8; y++)
+    for (int y = 0; y < 3; y++)
     {
-        printf("TEST %d/8:\n", y + 1);
+        printf("TEST %d/3:\n", y + 1);
 
         encode_start = clock();
         errcode = encode(infilenames[y], "out.txt");
